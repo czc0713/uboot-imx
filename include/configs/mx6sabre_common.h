@@ -106,6 +106,7 @@
 #define CONFIG_LOADADDR                        0x12000000
 #define CONFIG_SYS_TEXT_BASE           0x17800000
 #define CONFIG_SYS_MMC_IMG_LOAD_PART	1
+#define CONFIG_BOOTARGS "console=ttymxc0,115200 init=/init video=mxcfb0:dev=ldb,bpp=32 video=mxcfb1:off video=mxcfb2:off video=mxcfb3:off vmalloc=256M androidboot.console=ttymxc0 consoleblank=0 androidboot.hardware=freescale cma=384M androidboot.dm_verity=disabled androidboot.selinux=disabled"
 
 #ifdef CONFIG_SYS_BOOT_NAND
 #define CONFIG_MFG_NAND_PARTITION "mtdparts=gpmi-nand:64m(boot),16m(kernel),16m(dtb),-(rootfs) "
@@ -349,7 +350,7 @@
 #ifdef CONFIG_SYS_USE_SPINOR
 #define CONFIG_CMD_SF
 #define CONFIG_SPI_FLASH
-#define CONFIG_SPI_FLASH_STMICRO
+#define CONFIG_SPI_FLASH_MACRONIX
 #define CONFIG_MXC_SPI
 #define CONFIG_SF_DEFAULT_BUS  0
 #define CONFIG_SF_DEFAULT_SPEED 20000000
@@ -388,6 +389,8 @@
 #if defined(CONFIG_ENV_IS_IN_MMC)
 #define CONFIG_ENV_OFFSET		(8 * 64 * 1024)
 #elif defined(CONFIG_ENV_IS_IN_SPI_FLASH)
+#undef CONFIG_ENV_SIZE
+#define CONFIG_ENV_SIZE         	   (128 * 1024)	/*zhicai add in 20161103*/
 #define CONFIG_ENV_OFFSET              (768 * 1024)
 #define CONFIG_ENV_SECT_SIZE           (64 * 1024)
 #define CONFIG_ENV_SPI_BUS             CONFIG_SF_DEFAULT_BUS

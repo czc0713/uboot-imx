@@ -237,6 +237,8 @@ int saveenv(void)
 		}
 	}
 
+	printf("CONFIG_ENV_SIZE = %d , CONFIG_ENV_SECT_SIZE =%d",CONFIG_ENV_SIZE,CONFIG_ENV_SECT_SIZE);
+
 	/* Is the sector larger than the env (i.e. embedded) */
 	if (CONFIG_ENV_SECT_SIZE > CONFIG_ENV_SIZE) {
 		saved_size = CONFIG_ENV_SECT_SIZE - CONFIG_ENV_SIZE;

@@ -937,7 +937,10 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 #endif
 
 	if (initcall_run_list(init_sequence_r))
+	{
+		printf("[czc] initcall_run_list(init_sequence_r) failed!! \n");
 		hang();
+	}
 
 	/* NOTREACHED - run_main_loop() does not return */
 	hang();

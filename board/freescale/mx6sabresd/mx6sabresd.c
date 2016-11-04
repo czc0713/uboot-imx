@@ -172,10 +172,16 @@ static iomux_v3_cfg_t const usdhc4_pads[] = {
 
 #ifdef CONFIG_MXC_SPI
 static iomux_v3_cfg_t const ecspi1_pads[] = {
+#if 0
 	MX6_PAD_KEY_COL0__ECSPI1_SCLK | MUX_PAD_CTRL(SPI_PAD_CTRL),
 	MX6_PAD_KEY_COL1__ECSPI1_MISO | MUX_PAD_CTRL(SPI_PAD_CTRL),
 	MX6_PAD_KEY_ROW0__ECSPI1_MOSI | MUX_PAD_CTRL(SPI_PAD_CTRL),
 	MX6_PAD_KEY_ROW1__GPIO4_IO09 | MUX_PAD_CTRL(NO_PAD_CTRL),
+#endif
+	MX6_PAD_EIM_D16__ECSPI1_SCLK | MUX_PAD_CTRL(SPI_PAD_CTRL),
+	MX6_PAD_EIM_D17__ECSPI1_MISO | MUX_PAD_CTRL(SPI_PAD_CTRL),
+	MX6_PAD_EIM_D18__ECSPI1_MOSI | MUX_PAD_CTRL(SPI_PAD_CTRL),
+	MX6_PAD_EIM_D24__GPIO3_IO24 | MUX_PAD_CTRL(NO_PAD_CTRL),//MX6_PAD_EIM_EB2__GPIO2_IO30 | MUX_PAD_CTRL(NO_PAD_CTRL), 
 };
 
 static void setup_spi(void)
@@ -185,7 +191,7 @@ static void setup_spi(void)
 
 int board_spi_cs_gpio(unsigned bus, unsigned cs)
 {
-	return (bus == 0 && cs == 0) ? (IMX_GPIO_NR(4, 9)) : -1;
+	return (bus == 0 && cs == 0) ? (IMX_GPIO_NR(3, 24)) : -1;	//IMX_GPIO_NR(2, 30)
 }
 #endif
 
@@ -264,7 +270,7 @@ static iomux_v3_cfg_t const epdc_enable_pads[] = {
 	MX6_PAD_EIM_DA12__EPDC_DATA02	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
 	MX6_PAD_EIM_DA11__EPDC_DATA03	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
 	MX6_PAD_EIM_LBA__EPDC_DATA04	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
-	MX6_PAD_EIM_EB2__EPDC_DATA05	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
+	//MX6_PAD_EIM_EB2__EPDC_DATA05	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
 	MX6_PAD_EIM_CS0__EPDC_DATA06	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
 	MX6_PAD_EIM_RW__EPDC_DATA07	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
 	MX6_PAD_EIM_A21__EPDC_GDCLK	| MUX_PAD_CTRL(EPDC_PAD_CTRL),
@@ -742,6 +748,7 @@ struct display_info_t const displays[] = {{
 	.detect	= NULL,
 	.enable	= enable_lvds,
 	.mode	= {
+	#if 0
 		.name           = "Hannstar-XGA",
 		.refresh        = 60,
 		.xres           = 1024,
@@ -753,8 +760,20 @@ struct display_info_t const displays[] = {{
 		.lower_margin   = 7,
 		.hsync_len      = 60,
 		.vsync_len      = 10,
+	#endif
+		.name           = "1080P60",
+		.refresh        = 60,
+		.xres           = 1920,
+		.yres           = 1080,
+		.pixclock       = 15385,
+		.left_margin    = 100,
+		.right_margin   = 48,
+		.upper_margin   = 100,
+		.lower_margin   = 17,
+		.hsync_len      = 32,
+		.vsync_len      = 100,
 		.sync           = FB_SYNC_EXT,
-		.vmode          = FB_VMODE_NONINTERLACED
+		.vmode          = FB_VMODE_NONINTERLACED,
 } }, {
 	.bus	= -1,
 	.addr	= 0,
@@ -951,6 +970,7 @@ int board_init(void)
 
 #ifdef CONFIG_MXC_SPI
 	setup_spi();
+	printf("[SPI} setup_spi()\n");
 #endif
 	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
 
@@ -1220,6 +1240,7 @@ void board_fastboot_setup(void)
 			setenv("bootcmd", "boota mmc1");
 	    break;
 	case MMC4_BOOT:
+	case SPI_NOR_BOOT: /* nor spi boot,set emmc as boot device :zhicaic add 2016.11.03  */
 	    if (!getenv("fastboot_dev"))
 			setenv("fastboot_dev", "mmc2");
 	    if (!getenv("bootcmd"))
@@ -1246,6 +1267,7 @@ int check_recovery_cmd_file(void)
     int recovery_mode = 0;
 
     recovery_mode = recovery_check_and_clean_flag();
+	printf("[czc] check_recovery_cmd_file() recovery_mode:%d \n",recovery_mode);
 
     /* Check Recovery Combo Button press or not. */
 	imx_iomux_v3_setup_multiple_pads(recovery_key_pads,
@@ -1264,6 +1286,7 @@ int check_recovery_cmd_file(void)
 void board_recovery_setup(void)
 {
 	int bootdev = get_boot_device();
+	printf("recovery on bootdev: %d\n", bootdev);
 
 	switch (bootdev) {
 #if defined(CONFIG_FASTBOOT_STORAGE_SATA)
@@ -1287,6 +1310,7 @@ void board_recovery_setup(void)
 				"boota mmc1 recovery");
 		break;
 	case MMC4_BOOT:
+		case SPI_NOR_BOOT: /* recovery mode:  nor spi boot,set emmc as boot device :zhicaic add 2016.11.03  */
 		if (!getenv("bootcmd_android_recovery"))
 			setenv("bootcmd_android_recovery",
 				"boota mmc2 recovery");

@@ -12,6 +12,7 @@ int board_video_skip(void)
 	int ret;
 	char const *panel = getenv("panel");
 
+	printf("panel detected: default to %s\n", panel);
 	if (!panel) {
 		for (i = 0; i < display_count; i++) {
 			struct display_info_t const *dev = displays+i;
