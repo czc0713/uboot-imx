@@ -523,6 +523,11 @@ config TARGET_MX6SABRESD
 	select CPU_V7
 	select SUPPORT_SPL
 
+config TARGET_MX6QDL_HZ
+    bool "Support hzcar mx6qdl"
+    select CPU_V7
+    select SUPPORT_SPL
+
 config TARGET_MX6SLEVK
 	bool "Support mx6slevk"
 	select CPU_V7
@@ -869,6 +874,7 @@ source "board/freescale/mx6qsabreauto/Kconfig"
 source "board/freescale/mx6sabresd/Kconfig"
 source "board/freescale/mx6slevk/Kconfig"
 source "board/freescale/mx6sxsabresd/Kconfig"
+source "board/freescale/hzcarIMX6QDL/Kconfig"
 source "board/freescale/mx6sxsabreauto/Kconfig"
 source "board/freescale/mx6sx_17x17_arm2/Kconfig"
 source "board/freescale/mx6sx_19x19_arm2/Kconfig"

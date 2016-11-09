@@ -1,0 +1,15 @@
+if TARGET_MX6QDL_HZ
+
+config SYS_BOARD
+	default "hzcarIMX6QDL"
+
+config SYS_VENDOR
+	default "freescale"
+
+config SYS_SOC
+	default "mx6"
+
+config SYS_CONFIG_NAME
+	default "hzcarIMX6QDL"
+
+endif
